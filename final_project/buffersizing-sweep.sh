@@ -23,7 +23,7 @@ iperf=~/iperf-patched/src/iperf
 
 # TODO: change the interface for which queue size is adjusted
 # should be <switch-name>-eth3
-iface=s1-eth3
+iface=s0-eth1
 
 for run in 1; do
 for flows_per_host in 1 2 5 10 50 100 200 300 400; do

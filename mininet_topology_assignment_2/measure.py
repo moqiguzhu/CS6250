@@ -181,8 +181,18 @@ def main():
     link = custom(TCLink, max_queue_size=200)
 
     net = Mininet(topo=topo, host=host, link=link)
-
+    
     net.start()
+    
+    sender = net.getNodeByName('sender')
+    receiver = net.getNodeByName('receiver')
+
+    print('IP of sender:' + sender.IP())
+    print('IP of receiver:' + receiver.IP())
+    
+    sender.sendCmd('ping -c 2 '+ receiver.IP())
+    result = sender.waitOutput()
+    print(result.strip())    
 
     print "*** Dumping network connections:"
     dumpNetConnections(net)
@@ -196,7 +206,7 @@ def main():
         CLI(net)
     else:
         print "*** Running experiment"
-        run_topology_experiment(net)
+#        run_topology_experiment(net)
 
     net.stop()
     end = time()

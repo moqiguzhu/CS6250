@@ -157,10 +157,18 @@ class StarTopo(Topo):
     # Set appropriate values for bandwidth, delay,
     # and queue size
     def create_topology(self):
-        pass
+        for i in xrange(self.n):
+            self.addHost('h%d' % (i+1), cpu=self.cpu)
+        s0 = self.addSwitch('s0', fail_mode='open')
+
+        ## add Links
+        self.addLink('h1', 's0', bw=self.bw_net, max_queue_size=self.maxq)
+        
+        for i in xrange(1,self.n):
+            self.addLink('h%d' % (i+1), 's0', bw=self.bw_host, delay=self.delay)
 
 def start_tcpprobe():
-    "Instal tcp_pobe module and dump to file"
+    "Install tcp_pobe module and dump to file"
     os.system("rmmod tcp_probe; modprobe tcp_probe;")
     Popen("cat /proc/net/tcpprobe > %s/tcp_probe.txt" %
           args.dir, shell=True)
@@ -329,7 +337,19 @@ def do_sweep(iface):
 
         # You may use the helper functions set_q(),
         # get_rates(), avg(), median() and ok()
+        current_rate = -1
+        set_q(iface, mid)
+        rates = get_rates(iface)
+        current_rate = median(rates)
+        
+        fraction = current_rate / reference_rate
+        print " Utilisation %s [%s]" % (
+                format_fraction(fraction), format_floats(rates))
 
+        if ok(fraction):
+            max_q = mid
+        else:
+            min_q = mid + 1
 
     monitor.terminate()
     print "*** Minq for target: %d" % max_q
@@ -340,14 +360,27 @@ def do_sweep(iface):
 
 def verify_latency(net):
     "(Incomplete) verify link latency"
-    pass
+    h1 = net.getNodeByName('h1')
+    h2 = net.getNodeByName('h2')
+    h1.sendCmd('ping -c 2 ' + h2.IP())
+    result = h1.waitOutput()
+    print('ping information between h1 and h2:')
+    print(result.strip())   
+
+
 
 # TODO: Fill in the following function to verify the bandwidth
 # settings of your topology
 
 def verify_bandwidth(net):
     "(Incomplete) verify link bandwidth"
-    pass
+    h1 = net.getNodeByName('h1')
+    h2 = net.getNodeByName('h2')
+    h2.cmd(CUSTOM_IPERF_PATH, '-s &')
+    h1.sendCmd(CUSTOM_IPERF_PATH, '-c', h2.IP())
+    print "band width information between h1 and h2"
+    print h1.waitOutput().strip()
+    h2.cmd('kill $!')
 
 # TODO: Fill in the following function to
 # Start iperf on the receiver node
@@ -359,7 +392,10 @@ def verify_bandwidth(net):
 #       It will be used later in count_connections()
 
 def start_receiver(net):
-    pass
+    h1 = net.getNodeByName('h1')
+    h1.sendCmd('%s -s -p %s > %s/iperf_server.txt &' %
+                (CUSTOM_IPERF_PATH, 5001, args.dir))
+    
 
 # TODO: Fill in the following function to
 # Start N flows across the senders in a round-robin fashion
@@ -371,7 +407,18 @@ def start_receiver(net):
 def start_senders(net):
     # Seconds to run iperf; keep this very high
     seconds = 3600
-    pass
+    flowindex = -1  
+    for i in xrange(1,NUM_HOSTS):
+        node_name = 'h%d' % (i+1)
+        h = net.getNodeByName(node_name)
+        for j in xrange(args.nflows):
+            flowindex += 1
+            cmd = ('%s -c 10.0.0.1 -p %s -t %d -i 1 '
+                    '-yc -Z %s > %s/iperf_%s_%d.txt &' %
+                    (CUSTOM_IPERF_PATH, 5001, seconds,
+                    args.cong, args.dir, node_name, j))
+            h.cmd(cmd)
+            sleep(0.001)
 
 def main():
     "Create network and run Buffer Sizing experiment"
@@ -401,7 +448,7 @@ def main():
 
     # TODO: change the interface for which queue size is adjusted
     # should be <switch-name>-eth3
-    ret = do_sweep(iface=args.iface)
+    ret = do_sweep(iface='s0-eth1')
     total_flows = (NUM_HOSTS - 1) * args.nflows
 
     # Store output
