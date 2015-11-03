@@ -29,7 +29,7 @@ def parse_file(f):
     srtt = []
     for l in open(f).xreadlines():
         fields = l.strip().split(' ')
-        if len(fields) != 10:
+        if len(fields) != 11:
             break
         if fields[2].split(':')[1] != args.port:
             continue
@@ -38,7 +38,7 @@ def parse_file(f):
 
         c = int(fields[6])
         cwnd[sport].append(c * 1480 / 1024.0)
-        srtt.append(int(fields[-1]))
+        srtt.append(int(fields[-2]))
     return times, cwnd
 
 added = defaultdict(int)
