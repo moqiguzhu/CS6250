@@ -19,8 +19,8 @@ I have not attended any plan of Georgia Tech, all the videos are placed at Youtu
 - configure user-email and user-name on local repo
 
 - connect local repo and remote repo
-> $ git remote set-url git@github.com:moqiguzhu/CS6250.git
-  $ or git remote add origin git@github.com:moqiguzhu/CS6250.git
+> - $ git remote set-url git@github.com:moqiguzhu/CS6250.git
+   - $ or git remote add origin git@github.com:moqiguzhu/CS6250.git
 
   pay attention to that origin is just a name for remote repo, myorigin or other names will also be fine. you can use the following command to remove the current connection to remote repo.
   > $ git remote rm origin
