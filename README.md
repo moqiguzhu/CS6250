@@ -12,28 +12,26 @@ I have not attended any plan of Georgia Tech, all the videos are placed at Youtu
 
 ## git configuration
 - clone the original CS6250 repo
-> $ git clone https://github.com/udacity/gt-cs6250.git
+   - $ git clone https://github.com/udacity/gt-cs6250.git
 
 - create a repo called CS6250 at github.com as usual
 
 - configure user-email and user-name on local repo
 
 - connect local repo and remote repo
-> - $ git remote set-url git@github.com:moqiguzhu/CS6250.git
+   - $ git remote set-url git@github.com:moqiguzhu/CS6250.git
    - $ or git remote add origin git@github.com:moqiguzhu/CS6250.git
 
   pay attention to that origin is just a name for remote repo, myorigin or other names will also be fine. you can use the following command to remove the current connection to remote repo.
-  > $ git remote rm origin
+   - $ git remote rm origin
 
 - next, we need to deal with ssh keys
-> $ cd ~/.ssh
-  $ ssh-keygen
+   - $ cd ~/.ssh
+   - $ ssh-keygen
  
  - add the generated ssh key to github account
- > $ ssh -T git@github.com
-   $ git push -u origin master
-
-
+   - $ ssh -T git@github.com
+   - $ git push -u origin master
 
 ## Assignment 1
 mininet setup
