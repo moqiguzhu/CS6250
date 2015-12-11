@@ -29,7 +29,7 @@ I have not attended any plan of Georgia Tech, all the videos are placed at Youtu
    - $ cd ~/.ssh
    - $ ssh-keygen
  
- - add the generated ssh key to github account
+- add the generated ssh key to github account
    - $ ssh -T git@github.com
    - $ git push -u origin master
 
